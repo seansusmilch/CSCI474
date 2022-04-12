@@ -1,4 +1,4 @@
-SOURCE="./p1.c"
+SOURCE="./p2.c"
 COMPILED="./a.out"
 
 rm $COMPILED
@@ -7,4 +7,4 @@ gcc $SOURCE
 
 echo "Executing $COMPILED"
 echo "--------------------"
-$COMPILED with some args
+$COMPILED bookexample.txt 4 14 20

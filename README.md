@@ -1,6 +1,10 @@
 Name: Sean Susmilch
 Date: 3/20/22
 
+# Screenshot
+
+https://i.imgur.com/rQqkS5c.png
+
 # HOW TO RUN
 
 I've made a script named run.sh that will take care of compilation, and running. Execute it with...
@@ -16,7 +20,7 @@ If the script mentioned above doesnt work, follow these steps to compile and exe
 1. Compile the project with...
 
 ```bash
-gcc ./p1.c
+gcc ./p2.c
 ```
 
 2. Execute the binary file (with optional command line arguments, see arguments section)
