@@ -113,7 +113,7 @@ int get_evict_idx(
  * @param proc_num_pgs 
  * @return int Number of page faults
  */
-int simulate_clock(size_t pg_stream_size, int *pg_stream, int frames_allocated, int proc_num_pgs){
+int simulate_clock(int pg_stream_size, int *pg_stream, int frames_allocated, int proc_num_pgs){
     int faults = 0;
     int pointer = 0;
     int space_left = frames_allocated;
@@ -192,7 +192,7 @@ int simulate_clock(size_t pg_stream_size, int *pg_stream, int frames_allocated, 
  * 4: CLOCK (defers to separate function)
  * 
  */
-int simulate(int policy, size_t pg_stream_size, int *pg_stream, int frames_allocated, int proc_num_pgs){
+int simulate(int policy, int pg_stream_size, int *pg_stream, int frames_allocated, int proc_num_pgs){
     if(policy == 4){
         // defer to dedicated function for CLOCK policy
         return simulate_clock(pg_stream_size, pg_stream, frames_allocated, proc_num_pgs);
@@ -207,8 +207,10 @@ int simulate(int policy, size_t pg_stream_size, int *pg_stream, int frames_alloc
         resident_set[i] = 0;
     }
     for(int i=0; i<pg_stream_size; i++){
-        if(pg_stream[i] > proc_num_pgs)
+        if(pg_stream[i] > proc_num_pgs){
+            // pprint("Page request is invalid");
             continue;
+        }
         if(is_resident(pg_stream[i], frames_allocated, resident_set)){
             continue;
         }
@@ -216,12 +218,14 @@ int simulate(int policy, size_t pg_stream_size, int *pg_stream, int frames_alloc
         // printf("%d %d\n", i, space_left);
 
         if(space_left > 0){
-            resident_set[i] = pg_stream[i];
+            resident_set[frames_allocated-space_left] = pg_stream[i];
             space_left = space_left - 1;
             continue;
         }
 
-        // printf("Page fault occurred with %d Last evicted %d\n", pg_stream[i], last_evicted);
+        // printf("Page fault occurred with %d Last evicted %d", pg_stream[i], last_evicted);
+        // print_arr(&resident_set, frames_allocated);
+        // pprint("");
         int evict_idx = get_evict_idx(policy, resident_set, i, pg_stream_size, pg_stream, last_evicted, frames_allocated, proc_num_pgs);
         last_evicted = evict_idx;
         resident_set[evict_idx] = pg_stream[i];
@@ -282,27 +286,32 @@ int main(int argc, char const *argv[]){
     size_t len = 0;
     ssize_t line_len;
     int pg_ct_unfiltered = 0;
-    int *pg_stream_unfiltered;
+    int *pg_stream_unfiltered = malloc(5000 * sizeof(int));
     FILE *in_file = fopen(input_filename, "r");
     printf("Page stream: [ ");
     while((line_len = getline(&line, &len, in_file)) != -1){
         sscanf(line, "%d\n", &pg_stream_unfiltered[pg_ct_unfiltered]);
-        printf("%d ", pg_stream_unfiltered[pg_ct_unfiltered]);
+        // printf("%d ", pg_stream_unfiltered[pg_ct_unfiltered]);
         pg_ct_unfiltered = pg_ct_unfiltered+1;
     }
     printf("]\n");
+    pprint("Page stream obtained");
+    // realloc(pg_stream_unfiltered, pg_ct_unfiltered * sizeof(int));
     // pprint("Filtering page stream to amount of pages in process");
     // int pg_ct = 0;
-    // int *pg_stream;
+    // int *pg_stream = (int*)malloc(pg_ct_unfiltered * sizeof(int));
     // for(int i=0; i<pg_ct_unfiltered; i++){
-    //     if(pg_stream_unfiltered[i] > 0 && pg_stream_unfiltered[i] <= proc_num_pgs){
-    //         // pg_stream[pg_ct] = pg_stream_unfiltered[i];
-    //         memcpy(pg_stream[pg_ct], pg_stream_unfiltered[i],sizeof(int));
-    //         pg_ct = pg_ct + 1;
+    //     if(pg_stream_unfiltered[i] > proc_num_pgs){
+    //         continue;
     //     }
+    //     pg_stream[pg_ct] = pg_stream_unfiltered[i];
+    //     pg_ct = pg_ct + 1;
     // }
+    // realloc(pg_stream, pg_ct * sizeof(int));
+    // free(pg_stream_unfiltered);
+    // printf("Filtered pg stream: ");
     // print_arr(pg_stream, pg_ct);
-    pprint("--------");
+    pprint("\n--------");
     
     for(int policy_num = 1; policy_num < 5; policy_num++){
         char *policy_name = get_policy_name(policy_num);
