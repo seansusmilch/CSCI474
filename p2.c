@@ -278,8 +278,6 @@ int main(int argc, char const *argv[]){
     sscanf(argv[2], "%d", &min_frames);
     sscanf(argv[3], "%d", &max_frames);
     sscanf(argv[4], "%d", &proc_num_pgs);
-    printf("%d\t%d\t%d\n", min_frames, max_frames, proc_num_pgs);
-
 
     printf("Reading page stream from %s\n", input_filename);
     char *line = NULL;
@@ -288,36 +286,39 @@ int main(int argc, char const *argv[]){
     int pg_ct_unfiltered = 0;
     int *pg_stream_unfiltered = malloc(5000 * sizeof(int));
     FILE *in_file = fopen(input_filename, "r");
-    printf("Page stream: [ ");
+    // printf("Page stream: [ ");
     while((line_len = getline(&line, &len, in_file)) != -1){
         sscanf(line, "%d\n", &pg_stream_unfiltered[pg_ct_unfiltered]);
         // printf("%d ", pg_stream_unfiltered[pg_ct_unfiltered]);
         pg_ct_unfiltered = pg_ct_unfiltered+1;
     }
-    printf("]\n");
-    pprint("Page stream obtained");
+    // printf("]\n");
+    // pprint("Page stream obtained");
+    printf("Unfiltered page stream length: %d\n", pg_ct_unfiltered);
     // realloc(pg_stream_unfiltered, pg_ct_unfiltered * sizeof(int));
-    // pprint("Filtering page stream to amount of pages in process");
-    // int pg_ct = 0;
-    // int *pg_stream = (int*)malloc(pg_ct_unfiltered * sizeof(int));
-    // for(int i=0; i<pg_ct_unfiltered; i++){
-    //     if(pg_stream_unfiltered[i] > proc_num_pgs){
-    //         continue;
-    //     }
-    //     pg_stream[pg_ct] = pg_stream_unfiltered[i];
-    //     pg_ct = pg_ct + 1;
-    // }
+    pprint("Filtering page stream to amount of pages in process");
+    int pg_ct = 0;
+    int *pg_stream = (int*)malloc(pg_ct_unfiltered * sizeof(int));
+    for(int i=0; i<pg_ct_unfiltered; i++){
+        if(pg_stream_unfiltered[i] > proc_num_pgs)
+            continue;
+        pg_stream[pg_ct] = pg_stream_unfiltered[i];
+        pg_ct = pg_ct + 1;
+    }
+    printf("Filtered page stream length: %d\n", pg_ct);
+
     // realloc(pg_stream, pg_ct * sizeof(int));
     // free(pg_stream_unfiltered);
     // printf("Filtered pg stream: ");
     // print_arr(pg_stream, pg_ct);
+    printf("Min Frames: %d\nMax Frames: %d\n# of Pages in Process: %d\n", min_frames, max_frames, proc_num_pgs);
     pprint("\n--------");
     
     for(int policy_num = 1; policy_num < 5; policy_num++){
         char *policy_name = get_policy_name(policy_num);
         
         for(int frames_alloc = min_frames; frames_alloc <= max_frames; frames_alloc++){
-            printf("%s\t%d\t%d\n", policy_name, frames_alloc, simulate(policy_num, pg_ct_unfiltered, pg_stream_unfiltered, frames_alloc, proc_num_pgs));
+            printf("%s,\t%d,\t%d\n", policy_name, frames_alloc, simulate(policy_num, pg_ct_unfiltered, pg_stream_unfiltered, frames_alloc, proc_num_pgs));
         }
     }
     // printf("%s\t%d\t%d\n", policy_names[1], 3, simulate(1, pg_ct, pg_stream, 3, proc_num_pgs));  // OPT
