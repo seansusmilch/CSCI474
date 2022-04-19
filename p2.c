@@ -15,12 +15,6 @@
 
 
 int print_arr(int arr[], int arr_size){
-    // char *out = "[ ";
-    // for(int i=0; i<arr_size; i++){
-    //     asprintf(&out, "%s%d ", out, arr[i]);
-    // }
-    // asprintf(&out, "%s]", out);
-    // return out;
     printf("[ ");
     for(int i=0; i<arr_size; i++){
         printf("%d ", arr[i]);
@@ -117,8 +111,6 @@ int simulate_clock(int pg_stream_size, int *pg_stream, int frames_allocated, int
     int faults = 0;
     int pointer = 0;
     int space_left = frames_allocated;
-    // int *resident_set = malloc(frames_allocated * sizeof(int));
-    // int *recently_used = malloc(frames_allocated * sizeof(int));
     int resident_set[frames_allocated];
     int recently_used[frames_allocated];
     for(int i=0; i<frames_allocated; i++){
@@ -176,8 +168,6 @@ int simulate_clock(int pg_stream_size, int *pg_stream, int frames_allocated, int
         // printf("\n");
     }
 
-    // free(resident_set);
-    // free(recently_used);
     return faults;
 }
 
@@ -293,9 +283,7 @@ int main(int argc, char const *argv[]){
         pg_ct_unfiltered = pg_ct_unfiltered+1;
     }
     // printf("]\n");
-    // pprint("Page stream obtained");
     printf("Unfiltered page stream length: %d\n", pg_ct_unfiltered);
-    // realloc(pg_stream_unfiltered, pg_ct_unfiltered * sizeof(int));
     pprint("Filtering page stream to amount of pages in process");
     int pg_ct = 0;
     int *pg_stream = (int*)malloc(pg_ct_unfiltered * sizeof(int));
@@ -307,10 +295,6 @@ int main(int argc, char const *argv[]){
     }
     printf("Filtered page stream length: %d\n", pg_ct);
 
-    // realloc(pg_stream, pg_ct * sizeof(int));
-    // free(pg_stream_unfiltered);
-    // printf("Filtered pg stream: ");
-    // print_arr(pg_stream, pg_ct);
     printf("Min Frames: %d\nMax Frames: %d\n# of Pages in Process: %d\n", min_frames, max_frames, proc_num_pgs);
     pprint("\n--------");
     
@@ -321,10 +305,6 @@ int main(int argc, char const *argv[]){
             printf("%s\t%d\t%d\n", policy_name, frames_alloc, simulate(policy_num, pg_ct_unfiltered, pg_stream_unfiltered, frames_alloc, proc_num_pgs));
         }
     }
-    // printf("%s\t%d\t%d\n", policy_names[1], 3, simulate(1, pg_ct, pg_stream, 3, proc_num_pgs));  // OPT
-    // printf("LRU\t%d\t%d\n", 3, simulate(2, pg_ct, pg_stream, 3, proc_num_pgs));  // LRU
-    // printf("FIFO\t%d\t%d\n", 3, simulate(3, pg_ct, pg_stream, 3, proc_num_pgs));  // FIFO
-    // printf("CLOCK\t%d\t%d\n", 3, simulate(4, pg_ct, pg_stream, 3, proc_num_pgs));  // CLOCK
     
     return 0;
 }
