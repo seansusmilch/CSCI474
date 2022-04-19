@@ -318,7 +318,7 @@ int main(int argc, char const *argv[]){
         char *policy_name = get_policy_name(policy_num);
         
         for(int frames_alloc = min_frames; frames_alloc <= max_frames; frames_alloc++){
-            printf("%s,\t%d,\t%d\n", policy_name, frames_alloc, simulate(policy_num, pg_ct_unfiltered, pg_stream_unfiltered, frames_alloc, proc_num_pgs));
+            printf("%s\t%d\t%d\n", policy_name, frames_alloc, simulate(policy_num, pg_ct_unfiltered, pg_stream_unfiltered, frames_alloc, proc_num_pgs));
         }
     }
     // printf("%s\t%d\t%d\n", policy_names[1], 3, simulate(1, pg_ct, pg_stream, 3, proc_num_pgs));  // OPT
