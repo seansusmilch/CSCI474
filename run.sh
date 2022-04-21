@@ -1,3 +1,11 @@
+
+
+
+
+
+
+
+
 SOURCE="./p1.c"
 COMPILED="./a.out"
 
